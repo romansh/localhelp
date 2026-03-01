@@ -534,6 +534,9 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
                     keepInView: true,
                     closeOnClick: false,
                     autoClose: false,
+                    // Push auto-pan away from the fixed 56px header + 10px breathing room
+                    autoPanPaddingTopLeft: L.point(10, 66),
+                    autoPanPaddingBottomRight: L.point(10, 10),
                 });
 
                 marker._helpRequestId = data.id;
