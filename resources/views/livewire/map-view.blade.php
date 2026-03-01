@@ -270,6 +270,14 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
 
         // Handle rectangle drawn
         this.map.on(L.Draw.Event.CREATED, (e) => {
+            // Verify state before processing drawing
+            if (!this.drawnLayer || !this.map.hasLayer(this.drawnLayer)) {
+                console.warn('[LocalHelp] Draw event: drawnLayer detached, re-adding');
+                if (this.drawnLayer) {
+                    this.map.addLayer(this.drawnLayer);
+                }
+            }
+            
             this.drawnLayer.clearLayers();
             this.drawnLayer.addLayer(e.layer);
             const bounds = e.layer.getBounds();
@@ -285,7 +293,23 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         });
 
         // Click to place new request
+        let lastClickTime = 0;
         this.map.on('click', (e) => {
+            // Throttle clicks to prevent rapid double-click issues
+            const now = Date.now();
+            if (now - lastClickTime < 300) {
+                console.debug('[LocalHelp] Click throttled');
+                return;
+            }
+            lastClickTime = now;
+            
+            // Verify map state before triggering Livewire action
+            if (!this.markerLayer || !this.map.hasLayer(this.markerLayer)) {
+                console.warn('[LocalHelp] Map click: invalid state, refreshing');
+                this.refreshMapState();
+                return;
+            }
+            
             $wire.call('openForm', e.latlng.lat, e.latlng.lng);
         });
 
@@ -313,6 +337,73 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
                     $wire.call('refreshRequests');
                 });
         }
+
+        // ─── Handle page visibility changes ─────────────────────────────
+        // When tab becomes visible after long inactivity, refresh map state
+        // to prevent "stuck" markers and ensure proper zoom/pan behavior.
+        let lastVisibilityChange = Date.now();
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                const inactiveMs = Date.now() - lastVisibilityChange;
+                console.debug('[LocalHelp] Page visible after ' + Math.round(inactiveMs / 1000) + 's');
+                
+                // If inactive for more than 30 seconds, invalidate map and refresh
+                if (inactiveMs > 30000) {
+                    console.debug('[LocalHelp] Long inactivity detected, refreshing map');
+                    this.refreshMapState();
+                }
+            }
+            lastVisibilityChange = Date.now();
+        });
+
+        // ─── Handle Livewire lifecycle events ───────────────────────────
+        // Reconnect can happen after network issues or long inactivity.
+        // When Livewire reconnects, the Alpine component may lose sync.
+        Livewire.hook('commit', ({ component, respond }) => {
+            // After each Livewire commit, ensure map layers are intact
+            if (this.markerLayer && this.map && !this.map.hasLayer(this.markerLayer)) {
+                console.warn('[LocalHelp] Livewire commit: markerLayer detached, re-adding');
+                this.map.addLayer(this.markerLayer);
+            }
+        });
+
+        // Handle browser sleep/wake (e.g., laptop lid close/open)
+        window.addEventListener('focus', () => {
+            console.debug('[LocalHelp] Window focus gained, checking map state');
+            this.refreshMapState();
+        });
+    },
+
+    // Refresh map state after inactivity or reconnection
+    refreshMapState() {
+        if (!this.map) return;
+        
+        try {
+            // Invalidate Leaflet tile cache and force re-render
+            this.map.invalidateSize();
+            
+            // Re-attach layers if they were detached
+            if (this.markerLayer && !this.map.hasLayer(this.markerLayer)) {
+                console.warn('[LocalHelp] refreshMapState: re-adding markerLayer');
+                this.map.addLayer(this.markerLayer);
+            }
+            if (this.drawnLayer && !this.map.hasLayer(this.drawnLayer)) {
+                console.warn('[LocalHelp] refreshMapState: re-adding drawnLayer');
+                this.map.addLayer(this.drawnLayer);
+            }
+            
+            // Force re-render of current markers
+            $wire.call('refreshRequests');
+        } catch (error) {
+            console.error('[LocalHelp] Error refreshing map state:', error);
+        }
+    },
+
+    // Check if map is in valid state for operations
+    isMapValid() {
+        return this.map 
+            && this.markerLayer 
+            && this.map.hasLayer(this.markerLayer);
     },
 
     renderMarkers(markers) {
@@ -322,11 +413,18 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         // 3. Multiple filter changes (wire:model.live) fire rapid updates
         // 4. Leaflet Draw interaction conflicts with marker rendering
         // 5. markerLayer detached from map during Livewire morphdom pass
+        // 6. Long page inactivity: browser throttles JS, Livewire disconnects
+        // 7. Browser sleep/wake: laptop lid close, tab backgrounded
+        // 8. Map click during invalid state triggers Livewire roundtrip
         //
         // Protections implemented:
         // - isRendering flag prevents concurrent execution
         // - Close all popups before clearing layers
         // - Verify markerLayer is still attached to map
+        // - Page visibility API: auto-refresh after 30s inactivity
+        // - Livewire commit hook: re-attach layers after reconnect
+        // - Window focus handler: refresh on wake from sleep
+        // - Click throttling (300ms) and state validation
         // - Detailed console logging for debugging
         
         if (!this.markerLayer) {
@@ -377,11 +475,21 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
     },
 
     focusMarker(id) {
-        if (!this.markerLayer) return;
+        if (!this.markerLayer || !this.map) {
+            console.warn('[LocalHelp] focusMarker: map or markerLayer not available');
+            return;
+        }
+        
+        // Ensure markerLayer is attached
+        if (!this.map.hasLayer(this.markerLayer)) {
+            console.warn('[LocalHelp] focusMarker: markerLayer detached, re-adding');
+            this.map.addLayer(this.markerLayer);
+        }
+        
         this.markerLayer.eachLayer(layer => {
             if (layer._helpRequestId === id) {
                 this.map.panTo(layer.getLatLng(), { animate: true });
-                layer.openPopup();
+                setTimeout(() => layer.openPopup(), 300); // Delay to allow pan animation
             }
         });
     },
