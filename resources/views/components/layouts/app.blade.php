@@ -78,7 +78,7 @@
                         </form>
                         
                         {{-- Modals --}}
-                        <div x-show="showNeeds" x-cloak class="fixed inset-0 z-[1600] flex items-center justify-center p-4">
+                        <div x-show="showNeeds" x-cloak class="fixed inset-0 z-[1600] flex items-start justify-center p-4 pt-16">
                             <div class="absolute inset-0 bg-black/40" @click="showNeeds = false"></div>
                             <div class="relative z-10">
                                 <button @click="showNeeds = false"
@@ -87,7 +87,7 @@
                             </div>
                         </div>
 
-                        <div x-show="showHelp" x-cloak class="fixed inset-0 z-[1600] flex items-center justify-center p-4">
+                        <div x-show="showHelp" x-cloak class="fixed inset-0 z-[1600] flex items-start justify-center p-4 pt-16">
                             <div class="absolute inset-0 bg-black/40" @click="showHelp = false"></div>
                             <div class="relative z-10">
                                 <button @click="showHelp = false"
