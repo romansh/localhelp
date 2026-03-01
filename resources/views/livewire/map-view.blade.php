@@ -271,8 +271,11 @@ function buildPopup(data) {
         // Show helper info if exists
         if (data.helper_name) {
           html += '<div style="color:#374151; margin-top:6px; font-size:13px;">'
-              + '<strong>{{ __('ui.helped_by') }}:</strong> ' + escape(data.helper_name)
-              + '</div>';
+              + '<strong>{{ __('ui.helped_by') }}:</strong> ' + escape(data.helper_name);
+          if (data.helper_contact) {
+              html += ' · <span style="color:#6b7280;">' + escape(data.helper_contact) + '</span>';
+          }
+          html += '</div>';
         }
 
         // Action buttons
