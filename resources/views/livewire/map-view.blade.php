@@ -168,14 +168,14 @@ const STATUS_ICONS = {
 };
 
 function createMarkerIcon(category) {
-    const color = CATEGORY_COLORS[category] || CATEGORY_COLORS.other;
+    var color = CATEGORY_COLORS[category] || CATEGORY_COLORS.other;
     return L.divIcon({
         className: 'custom-marker',
-        html: `<div style="
-            width: 28px; height: 28px; border-radius: 50%;
-            background: ${color}; border: 3px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        "></div>`,
+        html: '<div style="'
+            + 'width: 28px; height: 28px; border-radius: 50%;'
+            + 'background:' + color + '; border: 3px solid white;'
+            + 'box-shadow: 0 2px 6px rgba(0,0,0,0.3);'
+            + '"></div>',
         iconSize: [28, 28],
         iconAnchor: [14, 14],
         popupAnchor: [0, -16],
@@ -183,35 +183,36 @@ function createMarkerIcon(category) {
 }
 
 function buildPopup(data) {
-    const icon = STATUS_ICONS[data.status] || '';
-    const escape = (str) => {
+    var icon = STATUS_ICONS[data.status] || '';
+    var escape = function(str) {
         if (!str) return '';
-        const div = document.createElement('div');
+        var div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
     };
-    // Use pre-translated labels passed from the server (respects current locale).
-    const categoryLabel    = escape(data.category_label || data.category);
-    const contactTypeLabel = escape(data.contact_type_label || data.contact_type);
-    const statusLabel      = escape(data.status_label || data.status);
-    return `
-        <div style="min-width: 200px; font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.45;">
-            <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">
-                ${icon} ${escape(data.title)}
-            </div>
-            ${data.description ? `<p style="color: #555; margin: 0 0 6px;">${escape(data.description).substring(0, 140)}</p>` : ''}
-            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
-                <span style="background:#eef2ff; color:#4f46e5; border-radius:4px; padding:1px 6px;">${categoryLabel}</span>
-                <span style="background:#f3f4f6; color:#374151; border-radius:4px; padding:1px 6px;">${statusLabel}</span>
-            </div>
-            <div style="color: #374151; margin-bottom: 2px;">
-                <strong>${contactTypeLabel}:</strong> ${escape(data.contact_value)}
-            </div>
-            <div style="color: #9ca3af; font-size: 11px;">
-                ${escape(data.user_name)} · ${escape(data.created_at)}
-            </div>
-        </div>
-    `;
+    var categoryLabel    = escape(data.category_label || data.category);
+    var contactTypeLabel = escape(data.contact_type_label || data.contact_type);
+    var statusLabel      = escape(data.status_label || data.status);
+
+    var html = '<div style="min-width: 200px; font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.45;">';
+    html += '<div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">'
+          + icon + ' ' + escape(data.title) + '</div>';
+    if (data.description) {
+        html += '<p style="color: #555; margin: 0 0 6px;">'
+              + escape(data.description).substring(0, 140) + '</p>';
+    }
+    html += '<div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">'
+          + '<span style="background:#eef2ff; color:#4f46e5; border-radius:4px; padding:1px 6px;">' + categoryLabel + '</span>'
+          + '<span style="background:#f3f4f6; color:#374151; border-radius:4px; padding:1px 6px;">' + statusLabel + '</span>'
+          + '</div>';
+    html += '<div style="color: #374151; margin-bottom: 2px;">'
+          + '<strong>' + contactTypeLabel + ':</strong> ' + escape(data.contact_value)
+          + '</div>';
+    html += '<div style="color: #9ca3af; font-size: 11px;">'
+          + escape(data.user_name) + ' · ' + escape(data.created_at)
+          + '</div>';
+    html += '</div>';
+    return html;
 }
 
 // Register Alpine component for the Leaflet map
