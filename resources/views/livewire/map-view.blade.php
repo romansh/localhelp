@@ -303,10 +303,6 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         window.LOCALHELP_MARKER_LAYER = this.markerLayer;
         this.drawnLayer = new L.FeatureGroup().addTo(this.map);
 
-        // Localise Draw toolbar — rename 'Save' (commit deletions) to 'Clear all'
-        L.drawLocal.edit.toolbar.actions.save.text  = '{{ __('ui.clear_all') }}';
-        L.drawLocal.edit.toolbar.actions.save.title = '{{ __('ui.clear_all') }}';
-
         // Leaflet Draw control (rectangle only, no edit-vertices button)
         this.drawControl = new L.Control.Draw({
             draw: {
