@@ -40,7 +40,7 @@ class MapView extends Component
     public function loadRequests(): void
     {
         $query = HelpRequest::active()
-            ->with('user:id,name,avatar_url');
+            ->with(['user:id,name,avatar_url', 'helper:id,name']);
 
         if ($this->areaNorth !== null) {
             $query->inArea(
@@ -51,9 +51,13 @@ class MapView extends Component
             );
         }
 
-        if (! empty($this->filters)) {
-            $query->byCategories($this->filters);
+        if (empty($this->filters)) {
+            // When no filters are selected, show none (user expectation)
+            $this->markers = [];
+            return;
         }
+
+        $query->byCategories($this->filters);
 
         $requests = $query->latest()->limit(200)->get();
 
@@ -80,7 +84,45 @@ class MapView extends Component
             'expires_at' => $r->expires_at->toIso8601String(),
             'created_at' => $r->created_at->diffForHumans(),
             'is_owner' => $r->user_id === auth()->id(),
+            'helper_id' => $r->helper_id,
+            'helper_name' => $r->helper?->name,
+            'helper_contact' => $r->helper?->email ?? $r->contact_value,
         ])->toArray();
+    }
+
+    #[On('take-request')]
+    public function takeRequest(int $requestId): void
+    {
+        if (! auth()->check()) {
+            $this->dispatch('toast', message: __('auth.login_required'), type: 'warning');
+            return;
+        }
+
+        $r = HelpRequest::findOrFail($requestId);
+        if ($r->user_id === auth()->id()) {
+            $this->dispatch('toast', message: __('errors.cannot_take_own_request'), type: 'warning');
+            return;
+        }
+
+        $r->update(['helper_id' => auth()->id(), 'status' => 'in_progress']);
+        event(new \App\Events\HelpRequestUpdated($r));
+        $this->loadRequests();
+        $this->dispatch('toast', message: __('requests.taken'), type: 'success');
+    }
+
+    #[On('done-request')]
+    public function doneRequest(int $requestId): void
+    {
+        $r = HelpRequest::findOrFail($requestId);
+        if ($r->user_id !== auth()->id()) {
+            $this->dispatch('toast', message: __('errors.unauthorized'), type: 'error');
+            return;
+        }
+
+        $r->update(['status' => 'fulfilled']);
+        event(new \App\Events\HelpRequestUpdated($r));
+        $this->loadRequests();
+        $this->dispatch('toast', message: __('requests.fulfilled'), type: 'success');
     }
 
     /**

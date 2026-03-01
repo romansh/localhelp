@@ -13,6 +13,7 @@ class HelpRequest extends Model
 
     protected $fillable = [
         'user_id',
+        'helper_id',
         'title',
         'description',
         'category',
@@ -41,6 +42,14 @@ class HelpRequest extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * User who agreed to help (helper)
+     */
+    public function helper(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'helper_id');
     }
 
     // ─── Scopes ──────────────────────────────────────────────
