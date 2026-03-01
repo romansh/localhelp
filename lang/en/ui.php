@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'app_name' => 'LocalHelp',
+    'tagline' => 'Neighbors helping neighbors',
+    'create_request' => 'Create Request',
+    'my_requests' => 'My Requests',
+    'all_requests' => 'All Requests',
+    'draw_area' => 'Draw area on map',
+    'clear_area' => 'Clear selection',
+    'all_categories' => 'All categories',
+    'no_requests' => 'No help requests in this area yet.',
+    'click_map' => 'Click on the map to place your request',
+    'loading' => 'Loading...',
+    'close' => 'Close',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'delete' => 'Delete',
+    'confirm_delete' => 'Are you sure you want to delete this request?',
+    'filters' => 'Filters',
+    'expires_in' => 'Expires in :time',
+    'expired' => 'Expired',
+    'posted_by' => 'Posted by :name',
+    'language' => 'Language',
+];
