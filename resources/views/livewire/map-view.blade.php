@@ -26,7 +26,7 @@
                         'products' => '#3b82f6',
                         'medicine' => '#ef4444',
                         'transport' => '#8b5cf6',
-                        'other' => '#6b7280',
+                        'other' => '#10b981',
                     ];
                 @endphp
                 @foreach (\App\Models\HelpRequest::categories() as $key => $label)
@@ -168,7 +168,7 @@ const CATEGORY_COLORS = {
     products: '#3b82f6',
     medicine: '#ef4444',
     transport: '#8b5cf6',
-    other: '#6b7280',
+    other: '#10b981',
 };
 
 // Current user id for popup action logic
@@ -205,15 +205,28 @@ const STATUS_ICONS = {
     fulfilled: '✅',
 };
 
-function createMarkerIcon(category) {
-    var color = CATEGORY_COLORS[category] || CATEGORY_COLORS.other;
+function createMarkerIcon(data) {
+    var color = CATEGORY_COLORS[data.category] || CATEGORY_COLORS.other;
+    var taken     = !!data.helper_id;
+    var fulfilled = data.status === 'fulfilled';
+    var border   = fulfilled ? '3px solid #9ca3af'
+                 : taken     ? '4px solid #f59e0b'
+                 :             '3px solid white';
+    var opacity  = fulfilled ? '0.45' : '1';
+    var inner = taken && !fulfilled
+        ? '<div style="position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#f59e0b;border:2px solid white;"></div>'
+        : '';
     return L.divIcon({
         className: 'custom-marker',
-        html: '<div style="'
-            + 'width: 28px; height: 28px; border-radius: 50%;'
-            + 'background:' + color + '; border: 3px solid white;'
-            + 'box-shadow: 0 2px 6px rgba(0,0,0,0.3);'
-            + '"></div>',
+        html: '<div style="position:relative;width:28px;height:28px;">'
+            + '<div style="'
+            + 'width:28px;height:28px;border-radius:50%;'
+            + 'background:' + color + ';' + border + ';'
+            + 'box-shadow:0 2px 6px rgba(0,0,0,0.3);'
+            + 'opacity:' + opacity + ';'
+            + '"></div>'
+            + inner
+            + '</div>',
         iconSize: [28, 28],
         iconAnchor: [14, 14],
         popupAnchor: [0, -16],
@@ -525,7 +538,7 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
             // Add new markers
             (markers || []).forEach(data => {
                 const marker = L.marker([data.lat, data.lng], {
-                    icon: createMarkerIcon(data.category),
+                    icon: createMarkerIcon(data),
                     // Prevent marker clicks from bubbling to map.on('click')
                     // so clicking a marker opens its popup instead of the form.
                     bubblingMouseEvents: false,
