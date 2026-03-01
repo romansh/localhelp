@@ -122,7 +122,6 @@
              'lng' => config('localhelp.map.default_lng'),
              'zoom' => config('localhelp.map.default_zoom'),
          ]))"
-         x-effect="updateMarkers($wire.markers)"
          @focus-marker.window="focusMarker($event.detail.id)">
 
         <div id="map" class="absolute inset-0 z-0"></div>
@@ -273,6 +272,13 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         // Initial markers
         this.renderMarkers(this.markersData);
 
+        // Watch for Livewire property changes — this is the primary
+        // mechanism to re-render markers when filters change, new
+        // requests arrive via poll or Echo, etc.
+        $wire.$watch('markers', (newMarkers) => {
+            this.renderMarkers(newMarkers);
+        });
+
         // Subscribe to Reverb channel for instant updates.
         // If Reverb is unavailable, wire:poll.30000ms.visible (on the outer div)
         // acts as the fallback and refreshes the list every 30 s.
@@ -289,22 +295,16 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         }
     },
 
-    updateMarkers(newMarkers) {
-        this.markersData = newMarkers;
-        this.renderMarkers(newMarkers);
-    },
-
     renderMarkers(markers) {
         if (!this.markerLayer) return;
         this.markerLayer.clearLayers();
         (markers || []).forEach(data => {
             const marker = L.marker([data.lat, data.lng], {
                 icon: createMarkerIcon(data.category),
+                // Prevent marker clicks from bubbling to map.on('click')
+                // so clicking a marker opens its popup instead of the form.
+                bubblingMouseEvents: false,
             }).bindPopup(buildPopup(data));
-
-            // Stop click from propagating to the map so the "openForm" handler
-            // does not fire when the user clicks a marker to view its popup.
-            marker.on('click', (e) => L.DomEvent.stopPropagation(e));
 
             marker._helpRequestId = data.id;
             this.markerLayer.addLayer(marker);
