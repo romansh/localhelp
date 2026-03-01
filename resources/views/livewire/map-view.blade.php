@@ -261,10 +261,14 @@ function buildPopup(data) {
             html += '<div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">';
             html += '<button class="inline-flex items-center px-2 py-1 rounded text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700" onclick="window.handleOpenForm(' + data.id + ')">'
                 + '{{ __('ui.view') }}' + '</button>';
-            if (!data.helper_id) {
+            if (data.is_owner) {
+              html += '<span style="font-size:11px; padding:2px 8px; border-radius:4px; background:#eef2ff; color:#4f46e5; font-weight:500;">'
+                  + '{{ __('ui.your_request') }}' + '</span>';
+            } else if (!data.helper_id) {
               html += '<button class="inline-flex items-center px-2 py-1 rounded text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300" onclick="window.takeRequest(' + data.id + ')">'
                   + '{{ __('ui.ill_help') }}' + '</button>';
-            } else if (data.helper_id == MY_ID) {
+            }
+            if (data.is_owner && data.status !== 'fulfilled') {
               html += '<button class="inline-flex items-center px-2 py-1 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700" onclick="window.doneRequest(' + data.id + ')">'
                   + '{{ __('ui.mark_done') }}' + '</button>';
             }

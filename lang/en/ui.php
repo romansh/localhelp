@@ -15,6 +15,7 @@ return [
     'my_help' => 'My help',
     'no_assigned' => 'You have not taken any tasks yet.',
     'helped_by' => 'Helped by',
+    'your_request'   => 'Your request',
     'give_up'         => 'Give up',
     'confirm_give_up' => 'Are you sure you want to give up this task? It will be returned to open.',
     'clear_all'       => 'Clear all',
