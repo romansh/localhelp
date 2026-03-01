@@ -303,7 +303,11 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         window.LOCALHELP_MARKER_LAYER = this.markerLayer;
         this.drawnLayer = new L.FeatureGroup().addTo(this.map);
 
-        // Leaflet Draw control (rectangle only)
+        // Localise Draw toolbar — rename 'Save' (commit deletions) to 'Clear all'
+        L.drawLocal.edit.toolbar.actions.save.text  = '{{ __('ui.clear_all') }}';
+        L.drawLocal.edit.toolbar.actions.save.title = '{{ __('ui.clear_all') }}';
+
+        // Leaflet Draw control (rectangle only, no edit-vertices button)
         this.drawControl = new L.Control.Draw({
             draw: {
                 polyline: false,
@@ -315,7 +319,7 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
                     shapeOptions: { color: '#6366f1', weight: 2, fillOpacity: 0.1 },
                 },
             },
-            edit: { featureGroup: this.drawnLayer, remove: true },
+            edit: { featureGroup: this.drawnLayer, edit: false, remove: true },
         });
         this.map.addControl(this.drawControl);
 
