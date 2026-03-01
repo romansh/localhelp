@@ -108,6 +108,7 @@ class MapView extends Component
         event(new \App\Events\HelpRequestUpdated($r));
         $this->loadRequests();
         $this->dispatch('toast', message: __('requests.taken'), type: 'success');
+        $this->dispatch('refresh-my-help');
     }
 
     #[On('done-request')]
@@ -123,6 +124,7 @@ class MapView extends Component
         event(new \App\Events\HelpRequestUpdated($r));
         $this->loadRequests();
         $this->dispatch('toast', message: __('requests.fulfilled'), type: 'success');
+        $this->dispatch('refresh-my-needs');
     }
 
     /**
