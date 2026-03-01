@@ -171,6 +171,37 @@ const CATEGORY_COLORS = {
     other: '#6b7280',
 };
 
+// Current user id for popup action logic
+const MY_ID = @js(auth()->id());
+
+            window.takeRequest = function(requestId) {
+                const emitFn = window.Livewire?.emit ?? window.livewire?.emit;
+                if (!emitFn) {
+                    console.error('[LocalHelp] Livewire emit not available');
+                    return;
+                }
+                // call emitter with proper context
+                emitFn.call(window.Livewire ?? window.livewire, 'take-request', requestId);
+            }
+
+            window.doneRequest = function(requestId) {
+                const emitFn = window.Livewire?.emit ?? window.livewire?.emit;
+                if (!emitFn) {
+                    console.error('[LocalHelp] Livewire emit not available');
+                    return;
+                }
+                emitFn.call(window.Livewire ?? window.livewire, 'done-request', requestId);
+            }
+            window.handleOpenForm = function(requestId) {
+                if (window.LOCALHELP_MARKER_LAYER && window.LOCALHELP_MAP) {
+                    window.LOCALHELP_MARKER_LAYER.eachLayer(function(layer) {
+                        if (layer._helpRequestId === requestId) {
+                            window.LOCALHELP_MAP.panTo(layer.getLatLng(), { animate: true });
+                            setTimeout(function() { layer.openPopup(); }, 300);
+                        }
+                    });
+                }
+            }
 const STATUS_ICONS = {
     open: '🟢',
     in_progress: '🟡',
@@ -221,6 +252,26 @@ function buildPopup(data) {
     html += '<div style="color: #9ca3af; font-size: 11px;">'
           + escape(data.user_name) + ' · ' + escape(data.created_at)
           + '</div>';
+
+        // Show helper info if exists
+        if (data.helper_name) {
+          html += '<div style="color:#374151; margin-top:6px; font-size:13px;">'
+              + '<strong>{{ __('ui.helped_by') }}:</strong> ' + escape(data.helper_name)
+              + '</div>';
+        }
+
+        // Action buttons
+            html += '<div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">';
+            html += '<button class="inline-flex items-center px-2 py-1 rounded text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700" onclick="window.handleOpenForm(' + data.id + ')">'
+                + '{{ __('ui.view') }}' + '</button>';
+            if (!data.helper_id) {
+              html += '<button class="inline-flex items-center px-2 py-1 rounded text-sm font-medium bg-gray-200 text-gray-800 hover:bg-gray-300" onclick="window.takeRequest(' + data.id + ')">'
+                  + '{{ __('ui.ill_help') }}' + '</button>';
+            } else if (data.helper_id == MY_ID) {
+              html += '<button class="inline-flex items-center px-2 py-1 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700" onclick="window.doneRequest(' + data.id + ')">'
+                  + '{{ __('ui.mark_done') }}' + '</button>';
+            }
+            html += '</div>';
     html += '</div>';
     return html;
 }
@@ -250,6 +301,9 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         }).addTo(this.map);
 
         this.markerLayer = new L.LayerGroup().addTo(this.map);
+        // expose map + markerLayer globally for popup helpers
+        window.LOCALHELP_MAP = this.map;
+        window.LOCALHELP_MARKER_LAYER = this.markerLayer;
         this.drawnLayer = new L.FeatureGroup().addTo(this.map);
 
         // Leaflet Draw control (rectangle only)
