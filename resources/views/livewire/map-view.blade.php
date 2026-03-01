@@ -33,7 +33,7 @@
                     <label class="inline-flex items-center gap-1.5 text-sm cursor-pointer">
                         <input type="checkbox"
                                value="{{ $key }}"
-                               wire:model.live="filters"
+                               wire:model.live.debounce.150ms="filters"
                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                         <span class="inline-block w-3 h-3 rounded-full border border-white shadow-sm" 
                               style="background-color: {{ $categoryColors[$key] ?? '#6b7280' }}"></span>
@@ -232,6 +232,7 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
     drawControl: null,
     drawnLayer: null,
     markersData: initialMarkers || [],
+    isRendering: false,  // Flag to prevent concurrent renderMarkers() calls
 
     init() {
         this.map = L.map('map').setView(
@@ -315,19 +316,64 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
     },
 
     renderMarkers(markers) {
-        if (!this.markerLayer) return;
-        this.markerLayer.clearLayers();
-        (markers || []).forEach(data => {
-            const marker = L.marker([data.lat, data.lng], {
-                icon: createMarkerIcon(data.category),
-                // Prevent marker clicks from bubbling to map.on('click')
-                // so clicking a marker opens its popup instead of the form.
-                bubblingMouseEvents: false,
-            }).bindPopup(buildPopup(data));
+        // ─── Possible causes of "stuck" markers: ───────────────────────
+        // 1. Race condition: Echo + polling trigger simultaneous updates
+        // 2. Open popup during clearLayers() prevents marker removal
+        // 3. Multiple filter changes (wire:model.live) fire rapid updates
+        // 4. Leaflet Draw interaction conflicts with marker rendering
+        // 5. markerLayer detached from map during Livewire morphdom pass
+        //
+        // Protections implemented:
+        // - isRendering flag prevents concurrent execution
+        // - Close all popups before clearing layers
+        // - Verify markerLayer is still attached to map
+        // - Detailed console logging for debugging
+        
+        if (!this.markerLayer) {
+            console.warn('[LocalHelp] renderMarkers: markerLayer not initialized');
+            return;
+        }
+        
+        // Prevent concurrent rendering (race condition protection)
+        if (this.isRendering) {
+            console.debug('[LocalHelp] renderMarkers: already rendering, skipping');
+            return;
+        }
+        
+        this.isRendering = true;
+        
+        try {
+            // Check if markerLayer is still attached to the map
+            if (!this.map.hasLayer(this.markerLayer)) {
+                console.warn('[LocalHelp] markerLayer detached from map, re-adding');
+                this.map.addLayer(this.markerLayer);
+            }
+            
+            // Close all popups before clearing (prevents stuck markers)
+            this.map.closePopup();
+            
+            // Clear existing markers
+            this.markerLayer.clearLayers();
+            
+            console.debug('[LocalHelp] Rendering ' + (markers || []).length + ' markers');
+            
+            // Add new markers
+            (markers || []).forEach(data => {
+                const marker = L.marker([data.lat, data.lng], {
+                    icon: createMarkerIcon(data.category),
+                    // Prevent marker clicks from bubbling to map.on('click')
+                    // so clicking a marker opens its popup instead of the form.
+                    bubblingMouseEvents: false,
+                }).bindPopup(buildPopup(data));
 
-            marker._helpRequestId = data.id;
-            this.markerLayer.addLayer(marker);
-        });
+                marker._helpRequestId = data.id;
+                this.markerLayer.addLayer(marker);
+            });
+        } catch (error) {
+            console.error('[LocalHelp] Error rendering markers:', error);
+        } finally {
+            this.isRendering = false;
+        }
     },
 
     focusMarker(id) {
