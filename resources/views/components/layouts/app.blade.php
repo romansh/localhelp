@@ -46,7 +46,7 @@
 
                 {{-- Auth --}}
                 @auth
-                    <div class="flex items-center gap-2">
+                    <div x-data="{ showNeeds: false, showHelp: false }" class="flex items-center gap-2">
                         @php
                             $name = trim(auth()->user()->name ?? '');
                             $initials = '';
@@ -62,12 +62,30 @@
                             <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium">{{ $initials }}</span>
                         @endif
                         <span class="hidden sm:inline text-sm text-gray-700">{{ auth()->user()->name }}</span>
+                        {{-- Quick links: My needs / My help --}}
+                        <button @click.prevent="showNeeds = true" class="ml-2 text-xs text-gray-600 hover:text-indigo-600">{{ __('ui.my_needs') }}</button>
+                        <button @click.prevent="showHelp = true" class="ml-2 text-xs text-gray-600 hover:text-indigo-600">{{ __('ui.my_help') }}</button>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-sm text-gray-500 hover:text-red-600 transition cursor-pointer">
                                 {{ __('auth.logout') }}
                             </button>
                         </form>
+                        
+                        {{-- Modals --}}
+                        <div x-show="showNeeds" x-cloak class="fixed inset-0 z-[1600] flex items-center justify-center p-4">
+                            <div class="absolute inset-0 bg-black/40" @click="showNeeds = false"></div>
+                            <div class="relative z-10">
+                                <livewire:my-needs />
+                            </div>
+                        </div>
+
+                        <div x-show="showHelp" x-cloak class="fixed inset-0 z-[1600] flex items-center justify-center p-4">
+                            <div class="absolute inset-0 bg-black/40" @click="showHelp = false"></div>
+                            <div class="relative z-10">
+                                <livewire:my-help />
+                            </div>
+                        </div>
                     </div>
                 @else
                     <a href="{{ route('auth.google') }}"
