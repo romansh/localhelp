@@ -228,10 +228,9 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
             mapConfig.zoom
         );
 
-            // tile URL may include ?lang= parameter; many providers ignore it but
-            // some (e.g. custom OSM forks) will respect it and render labels in
-            // the appropriate language. Including it causes no harm when unused.
-            const tileUrl = `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png${mapConfig.lang ? '?lang='+mapConfig.lang : ''}`;
+            // Tile URL with optional lang param for providers that support it.
+            const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                + (mapConfig.lang ? '?lang=' + mapConfig.lang : '');
 
             L.tileLayer(tileUrl, {
         this.drawnLayer = new L.FeatureGroup().addTo(this.map);
