@@ -26,6 +26,11 @@ class MyNeeds extends Component
                 'id'             => $r->id,
                 'title'          => $r->title,
                 'status'         => $r->status,
+                'category'       => $r->category,
+                'contact_type'   => $r->contact_type,
+                'contact_value'  => $r->contact_value,
+                'created_at'     => $r->created_at->diffForHumans(),
+                'expires_at'     => $r->expires_at->diffForHumans(),
                 'helper_name'    => $r->helper?->name ?? null,
                 'helper_contact' => $r->helper?->email ?? null,
             ])->toArray();

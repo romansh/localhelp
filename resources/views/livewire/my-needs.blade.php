@@ -17,17 +17,38 @@
                         <span class="font-medium text-gray-900 text-sm leading-snug">{{ $r['title'] }}</span>
                         <span @class([
                             'shrink-0 text-xs px-2 py-0.5 rounded-full font-medium',
-                            'bg-green-100 text-green-700'  => $r['status'] === 'open',
-                            'bg-yellow-100 text-yellow-700'=> $r['status'] === 'in_progress',
-                            'bg-gray-100 text-gray-500'    => $r['status'] === 'fulfilled',
+                            'bg-green-100 text-green-700'   => $r['status'] === 'open',
+                            'bg-yellow-100 text-yellow-700' => $r['status'] === 'in_progress',
+                            'bg-gray-100 text-gray-500'     => $r['status'] === 'fulfilled',
                         ])>
                             {{ \App\Models\HelpRequest::statuses()[$r['status']] ?? $r['status'] }}
                         </span>
                     </div>
 
+                    {{-- Category + time --}}
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <span @class([
+                            'inline-flex items-center px-1.5 py-0.5 rounded',
+                            'bg-blue-50 text-blue-700'   => $r['category'] === 'products',
+                            'bg-red-50 text-red-700'     => $r['category'] === 'medicine',
+                            'bg-purple-50 text-purple-700' => $r['category'] === 'transport',
+                            'bg-gray-50 text-gray-600'   => $r['category'] === 'other',
+                        ])>
+                            {{ \App\Models\HelpRequest::categories()[$r['category']] ?? $r['category'] }}
+                        </span>
+                        <span>{{ $r['created_at'] }}</span>
+                        <span class="text-gray-400">&bull; ⏱ {{ $r['expires_at'] }}</span>
+                    </div>
+
+                    {{-- Contact --}}
+                    <div class="text-xs text-gray-600">
+                        <span class="font-medium">{{ \App\Models\HelpRequest::contactTypes()[$r['contact_type']] ?? $r['contact_type'] }}:</span>
+                        <span class="font-mono">{{ $r['contact_value'] }}</span>
+                    </div>
+
                     {{-- Helper info when assigned --}}
                     @if($r['helper_name'])
-                        <div class="text-xs text-gray-600">
+                        <div class="text-xs text-emerald-700 bg-emerald-50 rounded px-2 py-1">
                             <span class="font-medium">{{ __('ui.helped_by') }}:</span>
                             {{ $r['helper_name'] }}
                             @if($r['helper_contact'])
