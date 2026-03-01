@@ -21,12 +21,22 @@
                 @endif
             </div>
             <div class="flex flex-wrap gap-2">
+                @php
+                    $categoryColors = [
+                        'products' => '#3b82f6',
+                        'medicine' => '#ef4444',
+                        'transport' => '#8b5cf6',
+                        'other' => '#6b7280',
+                    ];
+                @endphp
                 @foreach (\App\Models\HelpRequest::categories() as $key => $label)
                     <label class="inline-flex items-center gap-1.5 text-sm cursor-pointer">
                         <input type="checkbox"
                                value="{{ $key }}"
                                wire:model.live="filters"
                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="inline-block w-3 h-3 rounded-full border border-white shadow-sm" 
+                              style="background-color: {{ $categoryColors[$key] ?? '#6b7280' }}"></span>
                         <span class="select-none">{{ $label }}</span>
                     </label>
                 @endforeach
