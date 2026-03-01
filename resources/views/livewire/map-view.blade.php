@@ -115,8 +115,11 @@
         </div>
     </aside>
 
-    {{-- Map --}}
+    {{-- Map — wire:ignore prevents Livewire morphdom from destroying the
+         Leaflet map container during re-renders. Marker updates are handled
+         via $wire.$watch('markers') in the Alpine component below. --}}
     <div class="flex-1 relative order-1 lg:order-2 min-h-[40vh] lg:min-h-0"
+         wire:ignore
          x-data="mapComponent(@js($markers), @js([
              'lat' => config('localhelp.map.default_lat'),
              'lng' => config('localhelp.map.default_lng'),
