@@ -2,7 +2,7 @@
 
 return [
     'app_name' => 'LocalHelp',
-    'tagline' => 'Сусіди допомагають сусідам',
+    'tagline' => 'Попроси допомоги або допоможи сусіду поруч',
     'create_request' => 'Створити запит',
     'my_requests' => 'Мої запити',
     'all_requests' => 'Усі запити',

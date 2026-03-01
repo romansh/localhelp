@@ -2,7 +2,7 @@
 
 return [
     'app_name' => 'LocalHelp',
-    'tagline' => 'Neighbors helping neighbors',
+    'tagline' => 'Ask for help or lend a hand nearby',
     'create_request' => 'Create Request',
     'my_requests' => 'My Requests',
     'all_requests' => 'All Requests',
