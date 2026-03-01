@@ -25,6 +25,14 @@
                         </span>
                     </div>
 
+                    {{-- Category + deadline --}}
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 font-medium">
+                            {{ \App\Models\HelpRequest::categories()[$r['category']] ?? $r['category'] }}
+                        </span>
+                        <span class="text-xs text-gray-400">⏱ {{ __('requests.expires_at') }}: {{ $r['expires_at'] }}</span>
+                    </div>
+
                     {{-- Requester contact --}}
                     <div class="text-xs text-gray-600">
                         <span class="font-medium">{{ __('ui.requested_by') }}:</span>

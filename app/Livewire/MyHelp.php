@@ -26,9 +26,11 @@ class MyHelp extends Component
                 'id'                => $r->id,
                 'title'             => $r->title,
                 'status'            => $r->status,
+                'category'          => $r->category,
                 'requester_name'    => $r->user?->name ?? '—',
                 'requester_contact' => $r->contact_value ?? '—',
                 'contact_type'      => $r->contact_type,
+                'expires_at'        => $r->expires_at->format('d M Y'),
             ])->toArray();
     }
 
