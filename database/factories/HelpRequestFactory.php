@@ -14,34 +14,34 @@ class HelpRequestFactory extends Factory
     protected $model = HelpRequest::class;
 
     /**
-     * Sample titles per category (Ukrainian-focused for demo).
+     * Sample titles per category (English).
      */
     protected static array $sampleTitles = [
         'products' => [
-            'Потрібна допомога з покупками',
-            'Не можу дістатися до магазину',
-            'Допоможіть купити продукти',
-            'Потрібні продукти з АТБ',
-            'Шукаю хто може купити хліб та молоко',
+            'Need help with grocery shopping',
+            'Cannot get to the store',
+            'Looking for someone to buy groceries',
+            'Need items from the supermarket',
+            'Need bread and milk delivery',
         ],
         'medicine' => [
-            'Потрібні ліки з аптеки',
-            'Шукаю ібупрофен, в аптеках поруч немає',
-            'Потрібна допомога забрати рецепт',
-            'Хто може занести ліки бабусі?',
+            'Need medicine from pharmacy',
+            'Looking for ibuprofen, local pharmacies out of stock',
+            'Need help picking up prescription',
+            'Can someone deliver medicine to my grandmother?',
         ],
         'transport' => [
-            'Потрібно підвезти до лікарні',
-            'Шукаю попутку в центр',
-            'Потрібна допомога з перевезенням речей',
-            'Хто їде до Борисполя?',
+            'Need a ride to the hospital',
+            'Looking for carpool to downtown',
+            'Need help moving some items',
+            'Anyone going to the airport?',
         ],
         'other' => [
-            'Потрібна допомога з прибиранням',
-            'Шукаю хто може вигуляти собаку',
-            'Потрібна допомога з технікою',
-            'Хто може допомогти з ремонтом?',
-            'Потрібен дитячий візок на тиждень',
+            'Need help with house cleaning',
+            'Looking for someone to walk my dog',
+            'Need help with computer setup',
+            'Can anyone help with minor repairs?',
+            'Need to borrow a stroller for a week',
         ],
     ];
 
