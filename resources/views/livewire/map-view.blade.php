@@ -157,7 +157,7 @@
             :lat="$newLat"
             :lng="$newLng"
             @close="closeForm"
-            @request-created="closeForm(); refreshRequests();" />
+            @request-created="$wire.$parent.closeForm(); $wire.$parent.refreshRequests();" />
     @endif
 </div>
 
