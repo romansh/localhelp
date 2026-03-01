@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
+use Throwable;
 
 class GoogleAuthController extends Controller
 {
@@ -22,7 +24,16 @@ class GoogleAuthController extends Controller
      */
     public function callback()
     {
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (InvalidStateException $e) {
+            // User cancelled the OAuth flow or session state mismatched.
+            return redirect()->route('auth.google')
+                ->with('error', 'OAuth cancelled or session expired. Please try again.');
+        } catch (Throwable $e) {
+            return redirect()->route('auth.google')
+                ->with('error', 'OAuth error. Please try again.');
+        }
 
         $user = User::updateOrCreate(
             ['google_id' => $googleUser->getId()],
