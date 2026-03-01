@@ -47,13 +47,23 @@
                 {{-- Auth --}}
                 @auth
                     <div class="flex items-center gap-2">
+                        @php
+                            $name = trim(auth()->user()->name ?? '');
+                            $initials = '';
+                            if ($name !== '') {
+                                $parts = preg_split('/\s+/', $name);
+                                $initials = strtoupper(substr($parts[0], 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : ''));
+                            }
+                        @endphp
                         @if (auth()->user()->avatar_url)
-                            <img src="{{ auth()->user()->avatar_url }}" alt="" class="w-8 h-8 rounded-full">
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full">
+                        @else
+                            <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium">{{ $initials }}</span>
                         @endif
                         <span class="hidden sm:inline text-sm text-gray-700">{{ auth()->user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="text-sm text-gray-500 hover:text-red-600 transition">
+                            <button type="submit" class="text-sm text-gray-500 hover:text-red-600 transition cursor-pointer">
                                 {{ __('auth.logout') }}
                             </button>
                         </form>
