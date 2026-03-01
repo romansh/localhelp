@@ -462,7 +462,12 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
                     // Prevent marker clicks from bubbling to map.on('click')
                     // so clicking a marker opens its popup instead of the form.
                     bubblingMouseEvents: false,
-                }).bindPopup(buildPopup(data));
+                }).bindPopup(buildPopup(data), {
+                    autoPan: true,
+                    keepInView: true,
+                    closeOnClick: false,
+                    autoClose: false,
+                });
 
                 marker._helpRequestId = data.id;
                 this.markerLayer.addLayer(marker);
