@@ -124,6 +124,7 @@
              'lat' => config('localhelp.map.default_lat'),
              'lng' => config('localhelp.map.default_lng'),
              'zoom' => config('localhelp.map.default_zoom'),
+             'lang' => app()->getLocale(),
          ]))"
          @focus-marker.window="focusMarker($event.detail.id)">
 
@@ -227,12 +228,12 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
             mapConfig.zoom
         );
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-            maxZoom: 19,
-        }).addTo(this.map);
+            // tile URL may include ?lang= parameter; many providers ignore it but
+            // some (e.g. custom OSM forks) will respect it and render labels in
+            // the appropriate language. Including it causes no harm when unused.
+            const tileUrl = `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png${mapConfig.lang ? '?lang='+mapConfig.lang : ''}`;
 
-        this.markerLayer = L.layerGroup().addTo(this.map);
+            L.tileLayer(tileUrl, {
         this.drawnLayer = new L.FeatureGroup().addTo(this.map);
 
         // Leaflet Draw control (rectangle only)
