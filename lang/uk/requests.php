@@ -37,6 +37,10 @@ return [
     'deleted' => 'Запит на допомогу видалено.',
     'status_changed' => 'Статус змінено на :status.',
 
+    // Additional messages
+    'taken' => 'Ви взяли цей запит. Будь ласка, звʼяжіться з прохачем.',
+    'fulfilled' => 'Запит позначено як виконаним.',
+
     // Placeholders
     'title_placeholder' => 'Наприклад: Потрібна допомога з доставкою продуктів',
     'description_placeholder' => 'Додайте деталі...',

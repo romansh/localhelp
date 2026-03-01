@@ -15,6 +15,8 @@ return [
     'my_help' => 'My help',
     'no_assigned' => 'You have not taken any tasks yet.',
     'helped_by' => 'Helped by',
+    'ill_help' => "I'll help",
+    'mark_done' => 'Mark done',
     'requested_by' => 'Requested by',
     'view' => 'View',
     'loading' => 'Loading...',

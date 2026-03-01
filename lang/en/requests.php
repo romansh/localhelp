@@ -37,6 +37,10 @@ return [
     'deleted' => 'Help request deleted.',
     'status_changed' => 'Status updated to :status.',
 
+    // Additional messages
+    'taken' => 'You have taken this request. Please contact the requester.',
+    'fulfilled' => 'Request marked as fulfilled.',
+
     // Placeholders
     'title_placeholder' => 'e.g., Need help carrying groceries',
     'description_placeholder' => 'Provide additional details...',
