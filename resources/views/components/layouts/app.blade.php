@@ -24,14 +24,14 @@
     <header class="fixed top-0 inset-x-0 z-[1000] bg-white/95 backdrop-blur border-b border-gray-200 shadow-sm">
         <div class="flex items-center justify-between px-4 h-14">
             {{-- Logo --}}
-            <a href="{{ route('home') }}" class="flex items-center gap-2">
-                <svg class="w-6 h-6 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ route('home') }}" class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
                 <div class="flex flex-col leading-tight">
-                    <span class="font-bold text-base text-indigo-600">{{ __('ui.app_name') }}</span>
-                    <span class="text-xs text-gray-400 hidden sm:block">{{ __('ui.tagline') }}</span>
+                    <span class="font-extrabold text-2xl text-indigo-600 tracking-tight">{{ __('ui.app_name') }}</span>
+                    <span class="text-xs font-extrabold text-gray-600 tracking-wide uppercase">{{ __('ui.tagline') }}</span>
                 </div>
             </a>
 
@@ -69,35 +69,56 @@
                         @else
                             <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium">{{ $initials }}</span>
                         @endif
-                        <span class="hidden sm:inline text-sm text-gray-700">{{ auth()->user()->name }}</span>
+
                         {{-- Quick links: My needs / My help --}}
-                        <button @click.prevent="showNeeds = true" class="ml-2 text-xs text-gray-600 hover:text-indigo-600 underline">{{ __('ui.my_needs') }}</button>
-                        <button @click.prevent="showHelp = true" class="ml-2 text-xs text-gray-600 hover:text-indigo-600 underline">{{ __('ui.my_help') }}</button>
+                        <button @click.prevent="showNeeds = true" class="ml-1 text-xs text-gray-600 hover:text-indigo-600 underline cursor-pointer">{{ __('ui.my_needs') }}</button>
+                        <button @click.prevent="showHelp = true"  class="text-xs text-gray-600 hover:text-indigo-600 underline cursor-pointer">{{ __('ui.my_help') }}</button>
+
+                        {{-- Name + Logout --}}
+                        <span class="text-sm text-gray-700 ml-1">{{ auth()->user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-sm text-gray-500 hover:text-red-600 transition cursor-pointer">
                                 {{ __('auth.logout') }}
                             </button>
                         </form>
-                        
-                        {{-- Modals --}}
-                        <div x-show="showNeeds" x-cloak class="fixed inset-0 z-[1600] flex items-start justify-center p-4 pt-16">
-                            <div class="absolute inset-0 bg-black/40" @click="showNeeds = false"></div>
-                            <div class="relative z-10">
-                                <button @click="showNeeds = false"
-                                        class="absolute -top-3 -right-3 z-20 bg-white rounded-full w-7 h-7 flex items-center justify-center shadow text-gray-500 hover:text-gray-900 text-lg leading-none">&times;</button>
-                                <livewire:my-needs />
-                            </div>
-                        </div>
 
-                        <div x-show="showHelp" x-cloak class="fixed inset-0 z-[1600] flex items-start justify-center p-4 pt-16">
-                            <div class="absolute inset-0 bg-black/40" @click="showHelp = false"></div>
-                            <div class="relative z-10">
-                                <button @click="showHelp = false"
-                                        class="absolute -top-3 -right-3 z-20 bg-white rounded-full w-7 h-7 flex items-center justify-center shadow text-gray-500 hover:text-gray-900 text-lg leading-none">&times;</button>
-                                <livewire:my-help />
+                        {{-- Modals — teleported to body to avoid header stacking context --}}
+                        <template x-teleport="body">
+                            <div x-show="showNeeds" x-cloak
+                                 class="fixed inset-0 z-[1600] flex items-start justify-center p-4 pt-16"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0"
+                                 x-transition:enter-end="opacity-100"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0">
+                                <div class="absolute inset-0 bg-black/40" @click="showNeeds = false"></div>
+                                <div class="relative z-10">
+                                    <button @click="showNeeds = false"
+                                            class="absolute -top-3 -right-3 z-20 bg-white rounded-full w-7 h-7 flex items-center justify-center shadow text-gray-500 hover:text-gray-900 text-lg leading-none cursor-pointer">&times;</button>
+                                    <livewire:my-needs />
+                                </div>
                             </div>
-                        </div>
+                        </template>
+
+                        <template x-teleport="body">
+                            <div x-show="showHelp" x-cloak
+                                 class="fixed inset-0 z-[1600] flex items-start justify-center p-4 pt-16"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0"
+                                 x-transition:enter-end="opacity-100"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0">
+                                <div class="absolute inset-0 bg-black/40" @click="showHelp = false"></div>
+                                <div class="relative z-10">
+                                    <button @click="showHelp = false"
+                                            class="absolute -top-3 -right-3 z-20 bg-white rounded-full w-7 h-7 flex items-center justify-center shadow text-gray-500 hover:text-gray-900 text-lg leading-none cursor-pointer">&times;</button>
+                                    <livewire:my-help />
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 @else
                     <a href="{{ route('auth.google') }}"
