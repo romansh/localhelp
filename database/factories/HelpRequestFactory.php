@@ -59,17 +59,20 @@ class HelpRequestFactory extends Factory
         $baseLat = 50.45;
         $baseLng = 30.52;
 
+        $contactType = $this->faker->randomElement(['email', 'phone', 'telegram']);
+        $contactValue = match ($contactType) {
+            'email'    => $this->faker->safeEmail(),
+            'phone'    => '+380' . $this->faker->numerify('#########'),
+            'telegram' => '@' . $this->faker->userName(),
+        };
+
         return [
             'user_id' => User::factory(),
             'title' => $this->faker->randomElement($titles),
             'description' => $this->faker->optional(0.7)->sentence(10),
             'category' => $category,
-            'contact_type' => $this->faker->randomElement(['email', 'phone', 'telegram']),
-            'contact_value' => $this->faker->randomElement([
-                '+380' . $this->faker->numerify('#########'),
-                '@' . $this->faker->userName(),
-                $this->faker->safeEmail(),
-            ]),
+            'contact_type' => $contactType,
+            'contact_value' => $contactValue,
             'latitude' => $baseLat + ($this->faker->randomFloat(5, -0.05, 0.05)),
             'longitude' => $baseLng + ($this->faker->randomFloat(5, -0.05, 0.05)),
             'status' => $this->faker->randomElement(['open', 'open', 'open', 'in_progress']),

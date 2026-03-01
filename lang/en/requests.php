@@ -37,6 +37,8 @@ return [
     'deleted' => 'Help request deleted.',
     'status_changed' => 'Status updated to :status.',
 
+    'given_up'  => 'You have given up the task. It is now open again.',
+
     // Additional messages
     'taken' => 'You have taken this request. Please contact the requester.',
     'fulfilled' => 'Request marked as fulfilled.',
