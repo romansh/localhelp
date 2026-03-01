@@ -4,8 +4,8 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Auth (Google OAuth) ─────────────────────────────────
-Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+Route::get('/login/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+Route::get('/login/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 Route::post('/logout', [GoogleAuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 // ─── Locale ──────────────────────────────────────────────
