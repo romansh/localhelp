@@ -175,22 +175,19 @@ const CATEGORY_COLORS = {
 const MY_ID = @js(auth()->id());
 
             window.takeRequest = function(requestId) {
-                const emitFn = window.Livewire?.emit ?? window.livewire?.emit;
-                if (!emitFn) {
-                    console.error('[LocalHelp] Livewire emit not available');
-                    return;
+                if (window.Livewire?.dispatch) {
+                    window.Livewire.dispatch('take-request', { requestId: requestId });
+                } else {
+                    $wire.call('takeRequest', requestId);
                 }
-                // call emitter with proper context
-                emitFn.call(window.Livewire ?? window.livewire, 'take-request', requestId);
             }
 
             window.doneRequest = function(requestId) {
-                const emitFn = window.Livewire?.emit ?? window.livewire?.emit;
-                if (!emitFn) {
-                    console.error('[LocalHelp] Livewire emit not available');
-                    return;
+                if (window.Livewire?.dispatch) {
+                    window.Livewire.dispatch('done-request', { requestId: requestId });
+                } else {
+                    $wire.call('doneRequest', requestId);
                 }
-                emitFn.call(window.Livewire ?? window.livewire, 'done-request', requestId);
             }
             window.handleOpenForm = function(requestId) {
                 if (window.LOCALHELP_MARKER_LAYER && window.LOCALHELP_MAP) {
