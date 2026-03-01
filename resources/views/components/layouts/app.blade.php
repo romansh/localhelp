@@ -69,13 +69,11 @@
                         @else
                             <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium">{{ $initials }}</span>
                         @endif
+                        <span class="text-sm text-gray-700 ml-1">{{ auth()->user()->name }}</span>
 
                         {{-- Quick links: My needs / My help --}}
-                        <button @click.prevent="showNeeds = true" class="ml-1 text-xs text-gray-600 hover:text-indigo-600 underline cursor-pointer">{{ __('ui.my_needs') }}</button>
-                        <button @click.prevent="showHelp = true"  class="text-xs text-gray-600 hover:text-indigo-600 underline cursor-pointer">{{ __('ui.my_help') }}</button>
-
-                        {{-- Name + Logout --}}
-                        <span class="text-sm text-gray-700 ml-1">{{ auth()->user()->name }}</span>
+                        <button @click.prevent="showNeeds = true" class="ml-2 text-xs text-gray-600 hover:text-indigo-600 underline cursor-pointer">{{ __('ui.my_needs') }}</button>
+                        <button @click.prevent="showHelp = true"  class="ml-1 text-xs text-gray-600 hover:text-indigo-600 underline cursor-pointer">{{ __('ui.my_help') }}</button>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-sm text-gray-500 hover:text-red-600 transition cursor-pointer">
