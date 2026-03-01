@@ -229,11 +229,16 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
             mapConfig.zoom
         );
 
-            // Tile URL with optional lang param for providers that support it.
-            const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                + (mapConfig.lang ? '?lang=' + mapConfig.lang : '');
+        // Tile URL with optional lang param for providers that support it.
+        const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            + (mapConfig.lang ? '?lang=' + mapConfig.lang : '');
 
-            L.tileLayer(tileUrl, {
+        L.tileLayer(tileUrl, {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 18,
+        }).addTo(this.map);
+
+        this.markerLayer = new L.LayerGroup().addTo(this.map);
         this.drawnLayer = new L.FeatureGroup().addTo(this.map);
 
         // Leaflet Draw control (rectangle only)
