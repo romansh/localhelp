@@ -3,10 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\HelpRequest;
-use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
@@ -19,7 +17,8 @@ class MapView extends Component
     public ?float $areaWest = null;
 
     // ─── Filters ─────────────────────────────────────────────
-    #[Url]
+    // Note: no #[Url] — array URL-sync in Livewire v4 resets the
+    // value to [] when the query param is absent, causing an empty map.
     public array $filters = ['products', 'medicine', 'transport', 'other'];
 
     // ─── Request form trigger coords ─────────────────────────
@@ -58,12 +57,20 @@ class MapView extends Component
 
         $requests = $query->latest()->limit(200)->get();
 
+        $categories   = HelpRequest::categories();
+        $contactTypes = HelpRequest::contactTypes();
+        $statuses     = HelpRequest::statuses();
+
         $this->markers = $requests->map(fn (HelpRequest $r) => [
             'id' => $r->id,
             'lat' => (float) $r->latitude,
             'lng' => (float) $r->longitude,
             'title' => $r->title,
             'category' => $r->category,
+            // Translated labels — used by the JS popup so language switch works
+            'category_label'      => $categories[$r->category] ?? $r->category,
+            'contact_type_label'  => $contactTypes[$r->contact_type] ?? $r->contact_type,
+            'status_label'        => $statuses[$r->status] ?? $r->status,
             'status' => $r->status,
             'user_name' => $r->user?->name ?? 'Unknown',
             'user_avatar' => $r->user?->avatar_url,

@@ -180,23 +180,31 @@ function createMarkerIcon(category) {
 }
 
 function buildPopup(data) {
-    const status = STATUS_ICONS[data.status] || '';
+    const icon = STATUS_ICONS[data.status] || '';
     const escape = (str) => {
         if (!str) return '';
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
     };
+    // Use pre-translated labels passed from the server (respects current locale).
+    const categoryLabel    = escape(data.category_label || data.category);
+    const contactTypeLabel = escape(data.contact_type_label || data.contact_type);
+    const statusLabel      = escape(data.status_label || data.status);
     return `
-        <div style="min-width: 180px; font-family: system-ui, sans-serif;">
-            <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">
-                ${status} ${escape(data.title)}
+        <div style="min-width: 200px; font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.45;">
+            <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">
+                ${icon} ${escape(data.title)}
             </div>
-            ${data.description ? `<p style="font-size: 12px; color: #666; margin: 4px 0;">${escape(data.description).substring(0, 120)}</p>` : ''}
-            <div style="font-size: 11px; color: #888; margin-top: 4px;">
-                ${escape(data.contact_type)}: ${escape(data.contact_value)}
+            ${data.description ? `<p style="color: #555; margin: 0 0 6px;">${escape(data.description).substring(0, 140)}</p>` : ''}
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+                <span style="background:#eef2ff; color:#4f46e5; border-radius:4px; padding:1px 6px;">${categoryLabel}</span>
+                <span style="background:#f3f4f6; color:#374151; border-radius:4px; padding:1px 6px;">${statusLabel}</span>
             </div>
-            <div style="font-size: 11px; color: #999; margin-top: 2px;">
+            <div style="color: #374151; margin-bottom: 2px;">
+                <strong>${contactTypeLabel}:</strong> ${escape(data.contact_value)}
+            </div>
+            <div style="color: #9ca3af; font-size: 11px;">
                 ${escape(data.user_name)} · ${escape(data.created_at)}
             </div>
         </div>
@@ -293,6 +301,11 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
             const marker = L.marker([data.lat, data.lng], {
                 icon: createMarkerIcon(data.category),
             }).bindPopup(buildPopup(data));
+
+            // Stop click from propagating to the map so the "openForm" handler
+            // does not fire when the user clicks a marker to view its popup.
+            marker.on('click', (e) => L.DomEvent.stopPropagation(e));
+
             marker._helpRequestId = data.id;
             this.markerLayer.addLayer(marker);
         });
