@@ -213,9 +213,14 @@ function createMarkerIcon(data) {
                  : taken     ? '4px solid #f59e0b'
                  :             '3px solid white';
     var opacity  = fulfilled ? '0.45' : '1';
+    // Orange badge for taken
     var inner = taken && !fulfilled
         ? '<div style="position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#f59e0b;border:2px solid white;"></div>'
         : '';
+    // White dot in center for owner's own requests
+    if (data.is_owner && !fulfilled) {
+        inner += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:white;opacity:0.9;"></div>';
+    }
     return L.divIcon({
         className: 'custom-marker',
         html: '<div style="position:relative;width:28px;height:28px;">'
