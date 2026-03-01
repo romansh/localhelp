@@ -65,6 +65,16 @@ class HelpRequest extends Model
     }
 
     /**
+     * Recently fulfilled requests (not yet expired) — shown faded on the map.
+     */
+    public function scopeRecentlyFulfilled(Builder $query): Builder
+    {
+        return $query
+            ->where('status', 'fulfilled')
+            ->where('expires_at', '>', now());
+    }
+
+    /**
      * Filter requests within a geographic bounding box.
      */
     public function scopeInArea(Builder $query, float $north, float $south, float $east, float $west): Builder
