@@ -56,7 +56,8 @@
                             }
                         @endphp
                         @if (auth()->user()->avatar_url)
-                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full">
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full"
+                                 onerror="this.outerHTML='<span class=\'w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium\'>{{ $initials }}<\/span>'" />
                         @else
                             <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium">{{ $initials }}</span>
                         @endif
