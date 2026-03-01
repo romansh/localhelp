@@ -343,6 +343,18 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
             $wire.call('clearArea');
         });
 
+        // Hide the useless 'Save' button when delete mode is activated —
+        // the only useful actions are 'Clear All' and 'Cancel'.
+        this.map.on('draw:deletestart', () => {
+            requestAnimationFrame(() => {
+                document.querySelectorAll('.leaflet-draw-actions a').forEach(a => {
+                    if (a.getAttribute('title') === L.drawLocal.edit.toolbar.actions.save.title) {
+                        a.closest('li').style.display = 'none';
+                    }
+                });
+            });
+        });
+
         // Click to place new request
         let lastClickTime = 0;
         this.map.on('click', (e) => {
