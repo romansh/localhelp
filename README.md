@@ -28,20 +28,32 @@ When you click "I'll help", the marker gets an **orange ring** and a status dot.
 
 ---
 
-### 3. Track what you've asked for
+### 3. Click any marker for full details
+
+Tap a marker to open a popup with everything you need: description, category, contact info, and deadline. If it's open, you'll see a big "I'll help" button. If someone already took it, you'll see who's helping.
+
+![Marker popup — open request](docs/images/Localhelp-3.png)
+*Full request details with one-click "I'll help" button.*
+
+![Marker popup — taken request](docs/images/Localhelp-4.png)
+*Helper's name and contact appear instantly when someone takes the request.*
+
+---
+
+### 4. Track what you've asked for
 
 The **My Needs** panel shows all your active requests in one place — who took them, their contact info, deadlines, and history. Fulfilled requests stay archived until they expire, so nothing disappears unexpectedly.
 
-![My Needs modal](docs/images/Localhelp-3.png)
+![My Needs modal](docs/images/Localhelp-6.png)
 *In Progress shows the helper's name and contact. Fulfilled cards stay visible until the request expires.*
 
 ---
 
-### 4. Manage what you're helping with
+### 5. Manage what you're helping with
 
 The **My Help** panel is your dashboard as a volunteer — every task you've committed to, with the requester's contact, category, and hard deadline. Changed your mind? Hit "Give up" and the request goes back to the map as open.
 
-![My Help modal](docs/images/Localhelp-4.png)
+![My Help modal](docs/images/Localhelp-5.png)
 *Category badge and expiry date on every card — no guessing about priorities.*
 
 ---
