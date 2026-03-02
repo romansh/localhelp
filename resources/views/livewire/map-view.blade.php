@@ -371,11 +371,13 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
                 bounds.getNorth(), bounds.getSouth(),
                 bounds.getEast(), bounds.getWest()
             );
+            this.map.invalidateSize();
         });
 
         // Handle drawn items deleted
         this.map.on(L.Draw.Event.DELETED, () => {
             $wire.call('clearArea');
+            this.map.invalidateSize();
         });
 
         // Hide the useless 'Save' button when delete mode is activated —
