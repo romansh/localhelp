@@ -44,7 +44,7 @@ Tap a marker to open a popup with everything you need: description, category, co
 
 The **My Needs** panel shows all your active requests in one place — who took them, their contact info, deadlines, and history. Fulfilled requests stay archived until they expire, so nothing disappears unexpectedly.
 
-![My Needs modal](docs/images/Localhelp-6.png)
+![My Needs modal](docs/images/Localhelp-5.png)
 *In Progress shows the helper's name and contact. Fulfilled cards stay visible until the request expires.*
 
 ---
@@ -53,7 +53,7 @@ The **My Needs** panel shows all your active requests in one place — who took 
 
 The **My Help** panel is your dashboard as a volunteer — every task you've committed to, with the requester's contact, category, and hard deadline. Changed your mind? Hit "Give up" and the request goes back to the map as open.
 
-![My Help modal](docs/images/Localhelp-5.png)
+![My Help modal](docs/images/Localhelp-6.png)
 *Category badge and expiry date on every card — no guessing about priorities.*
 
 ---
