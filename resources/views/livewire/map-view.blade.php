@@ -327,6 +327,7 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         window.LOCALHELP_MAP = this.map;
         window.LOCALHELP_MARKER_LAYER = this.markerLayer;
         this.drawnLayer = new L.FeatureGroup().addTo(this.map);
+        this.isDrawing = false; // Flag to prevent click during draw
 
         // Leaflet Draw control (rectangle only, no edit-vertices button)
         this.drawControl = new L.Control.Draw({
@@ -343,6 +344,15 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
             edit: { featureGroup: this.drawnLayer, edit: false, remove: true },
         });
         this.map.addControl(this.drawControl);
+
+        // Track drawing state to prevent click events during draw
+        this.map.on('draw:drawstart', () => {
+            this.isDrawing = true;
+        });
+        this.map.on('draw:drawstop', () => {
+            // Delay reset to allow draw:created to fire first
+            setTimeout(() => { this.isDrawing = false; }, 100);
+        });
 
         // Handle rectangle drawn
         this.map.on(L.Draw.Event.CREATED, (e) => {
@@ -383,6 +393,12 @@ Alpine.data('mapComponent', (initialMarkers, mapConfig) => ({
         // Click to place new request
         let lastClickTime = 0;
         this.map.on('click', (e) => {
+            // Ignore clicks during rectangle drawing
+            if (this.isDrawing) {
+                console.debug('[LocalHelp] Click ignored: drawing in progress');
+                return;
+            }
+            
             // Throttle clicks to prevent rapid double-click issues
             const now = Date.now();
             if (now - lastClickTime < 300) {
